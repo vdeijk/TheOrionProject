@@ -15,7 +15,7 @@ The Orion Project is a Unity-based tactical game featuring grid-based combat, un
 
 ## Note on Repository Contents
 
-This repository only contains the source code (scripts) for the The Orion Project project. Other folders such as `Assets/Scenes`, `Assets/Prefabs`, `Assets/Materials`, and `Assets/Audio` are not included due to third-party licensing restrictions.
+This repository only contains the source code (scripts) for The Orion Project. Other folders such as `Assets/Scenes`, `Assets/Prefabs`, `Assets/Materials`, and `Assets/Audio` are not included due to third-party licensing restrictions.
 To run the project, you will need to add your own Unity scenes, prefabs, and any required third-party assets.
 
 ## Folder Structure
@@ -52,9 +52,18 @@ Contributions are welcome! Please submit issues or pull requests for bug fixes, 
 
 For questions or support, contact the project maintainer or use the issue tracker.
 
+## Play the Game
+
+You can play the game on itch.io: [The Orion Project](https://vdeijk.itch.io/the-orion-project)
+
 ## License
 
-This project is for educational and non-commercial use. Third-party assets are not included in the repository and may have their own licenses.
+The source code in this repository is released under the MIT License (see LICENSE file).
+Game assets (art, audio, third-party content) are not included and are not open source.
+
+Most assets are subject to third-party licenses and are not available for redistribution.
+
+You are free to use, modify, and distribute the code, including for commercial purposes.
 
 ## Author
 
