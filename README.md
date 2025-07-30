@@ -1,4 +1,4 @@
-# The Orion Project Game
+# The Orion Project
 
 ## Overview
 
