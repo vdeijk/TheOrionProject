@@ -1,8 +1,8 @@
-# TurnBasedStrategy Game
+# The Orion Project Game
 
 ## Overview
 
-TurnBasedStrategy is a Unity-based tactical game featuring grid-based combat, unit assembly, and strategic resource management. The project leverages the Universal Render Pipeline (URP) and supports modular unit customization, dynamic UI, and advanced visual effects.
+The Orion Project is a Unity-based tactical game featuring grid-based combat, unit assembly, and strategic resource management. The project leverages the Universal Render Pipeline (URP) and supports modular unit customization, dynamic UI, and advanced visual effects.
 
 ## Features
 
@@ -15,7 +15,7 @@ TurnBasedStrategy is a Unity-based tactical game featuring grid-based combat, un
 
 ## Note on Repository Contents
 
-This repository only contains the source code (scripts) for the TurnBasedStrategy project. Other folders such as `Assets/Scenes`, `Assets/Prefabs`, `Assets/Materials`, and `Assets/Audio` are not included due to third-party licensing restrictions.
+This repository only contains the source code (scripts) for the The Orion Project project. Other folders such as `Assets/Scenes`, `Assets/Prefabs`, `Assets/Materials`, and `Assets/Audio` are not included due to third-party licensing restrictions.
 To run the project, you will need to add your own Unity scenes, prefabs, and any required third-party assets.
 
 ## Folder Structure
