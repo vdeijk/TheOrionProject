@@ -1,9 +1,12 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TurnBasedStrategy.Data;
+using TurnBasedStrategy.Infra;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     // Abstract base class for UI buttons with custom state and color transitions
     public abstract class BaseButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
     {
@@ -18,7 +21,6 @@ namespace TurnBasedStrategy
 
         [SerializeField] protected Button button;
         [SerializeField] protected Image buttonImage;
-        [SerializeField] protected ColorPalette colorPalette;
 
         protected bool isSelected = false;
 
@@ -61,18 +63,18 @@ namespace TurnBasedStrategy
         {
             Color targetColor = state switch
             {
-                ButtonState.Normal => colorPalette.buttonNormal,
-                ButtonState.Hover => colorPalette.buttonHover,
-                ButtonState.Pressed => colorPalette.buttonPressed,
-                ButtonState.Disabled => colorPalette.buttonDisabled,
-                ButtonState.Selected => colorPalette.buttonSelected,
-                _ => colorPalette.buttonNormal
+                ButtonState.Normal => ColorData.Instance.buttonNormal,
+                ButtonState.Hover => ColorData.Instance.buttonHover,
+                ButtonState.Pressed => ColorData.Instance.buttonPressed,
+                ButtonState.Disabled => ColorData.Instance.buttonDisabled,
+                ButtonState.Selected => ColorData.Instance.buttonSelected,
+                _ => ColorData.Instance.buttonNormal
             };
 
             if (isSmoothed && gameObject.activeInHierarchy)
             {
                 StopAllCoroutines();
-                StartCoroutine(ButtonTransitionService.Instance.LerpColor(buttonImage, targetColor));
+                StartCoroutine(ButtonTransitionMonobService.Instance.LerpColor(buttonImage, targetColor));
             }
             else
             {

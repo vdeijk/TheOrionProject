@@ -2,9 +2,15 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TurnBasedStrategy.Controllers;
+using TurnBasedStrategy.Data;
+using TurnBasedStrategy.Game;
+using TurnBasedStrategy.Domain;
+using TurnBasedStrategy.Infra;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class UnitInfoUI : MonoBehaviour
     {
         [SerializeField] TextMeshProUGUI actionPointsTextMeshPro;
@@ -20,22 +26,22 @@ namespace TurnBasedStrategy
 
         private void OnEnable()
         {
-            BaseAction.OnActionStarted += BaseAction_OnActionStarted;
-            BaseAction.OnActionCompleted += BaseAction_OnActionCompleted;
+            ActionBaseService.OnActionStarted += BaseAction_OnActionStarted;
+            ActionBaseService.OnActionCompleted += BaseAction_OnActionCompleted;
             UnitSelectService.OnUnitDeselected += UnitSelectionSystem_OnUnitDeselected;
             UnitSelectService.OnUnitSelected += UnitActionSystem_OnUnitSelected;
             PhaseManager.OnPhaseChanged += ControlModeManager_OnPhaseChanged;
-            CameraChangeService.OnCameraChanged += CameraChangeService_OnCameraChanged;
+            CameraChangeMonobService.OnCameraChanged += CameraChangeService_OnCameraChanged;
         }
 
         private void OnDisable()
         {
-            BaseAction.OnActionStarted -= BaseAction_OnActionStarted;
-            BaseAction.OnActionCompleted -= BaseAction_OnActionCompleted;
+            ActionBaseService.OnActionStarted -= BaseAction_OnActionStarted;
+            ActionBaseService.OnActionCompleted -= BaseAction_OnActionCompleted;
             UnitSelectService.OnUnitDeselected -= UnitSelectionSystem_OnUnitDeselected;
             UnitSelectService.OnUnitSelected -= UnitActionSystem_OnUnitSelected;
             PhaseManager.OnPhaseChanged -= ControlModeManager_OnPhaseChanged;
-            CameraChangeService.OnCameraChanged -= CameraChangeService_OnCameraChanged;
+            CameraChangeMonobService.OnCameraChanged -= CameraChangeService_OnCameraChanged;
         }
 
         private void UnitActionSystem_OnUnitSelected(object sender, EventArgs e)
@@ -78,27 +84,27 @@ namespace TurnBasedStrategy
 
         private bool CheckCannnotExecute()
         {
-            return UnitSelectService.Instance.selectedUnit == null;
+            return UnitSelectService.Instance.Data.SelectedUnit == null;
         }
 
         private void UpdateAP()
         {
-            ActionSystem actionSystem = UnitSelectService.Instance.selectedUnit.unitMindTransform.GetComponent<ActionSystem>();
-            Unit unit = UnitSelectService.Instance.selectedUnit;
-            TorsoData torsoData = (TorsoData)unit.partsData[PartType.Torso];
+            UnitActionController actionSystem = UnitSelectService.Instance.Data.SelectedUnit.Data.UnitMindTransform.GetComponent<UnitActionController>();
+            UnitSingleController unit = UnitSelectService.Instance.Data.SelectedUnit;
+            TorsoSO torsoData = (TorsoSO)unit.Data.PartsData[PartType.Torso];
             actionPointsTextMeshPro.text = "<b>Action Points:</b> " + actionSystem.actionPoints;
             salvageChanceField.text = "<b>Scavenge Chance:</b> " + (20 + torsoData.SalvageBoost) + "%";
         }
 
         private void UpdateNameAndStats()
         {
-            Unit selectedUnit = UnitSelectService.Instance.selectedUnit;
-            HealthSystem healthSystem = selectedUnit.unitMindTransform.GetComponent<HealthSystem>();
+            UnitSingleController selectedUnit = UnitSelectService.Instance.Data.SelectedUnit;
+            UnitHealthController healthSystem = selectedUnit.Data.UnitMindTransform.GetComponent<UnitHealthController>();
 
             int curHealth = (int)healthSystem.health;
             int curArmor = (int)healthSystem.armor;
             int curShield = (int)healthSystem.shield;
-            int cutHeat = (int)selectedUnit.unitMindTransform.GetComponent<HeatSystem>().heat;
+            int cutHeat = (int)selectedUnit.Data.UnitMindTransform.GetComponent<HeatSystemController>().heat;
 
             healthText.text = curHealth.ToString();
             armorText.text = curArmor.ToString();
@@ -107,14 +113,14 @@ namespace TurnBasedStrategy
         }
         private void UpdateBars()
         {
-            Unit selectedUnit = UnitSelectService.Instance.selectedUnit;
+            UnitSingleController selectedUnit = UnitSelectService.Instance.Data.SelectedUnit;
 
-            HealthSystem healthSystem = selectedUnit.unitMindTransform.GetComponent<HealthSystem>();
+            UnitHealthController healthSystem = selectedUnit.Data.UnitMindTransform.GetComponent<UnitHealthController>();
             healthBar.fillAmount = healthSystem.GetHealthNormalized();
             armorBar.fillAmount = healthSystem.GetArmorNormalized();
             shieldBar.fillAmount = healthSystem.GetShieldNormalized();
 
-            HeatSystem heatSystem = selectedUnit.unitMindTransform.GetComponent<HeatSystem>();
+            HeatSystemController heatSystem = selectedUnit.Data.UnitMindTransform.GetComponent<HeatSystemController>();
             ammoBar.fillAmount = heatSystem.GetHeatNormalized();
         }
     }

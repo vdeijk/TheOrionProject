@@ -1,9 +1,11 @@
 using System;
 using UnityEngine;
 using System.Collections;
+using TurnBasedStrategy.Game;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class BriefingClickHandlers : MonoBehaviour
     {
         public void StartPrep()

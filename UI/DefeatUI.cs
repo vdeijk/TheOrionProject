@@ -1,12 +1,16 @@
 using TMPro;
 using UnityEngine;
+using TurnBasedStrategy.Data;
+using TurnBasedStrategy.Game;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class DefeatUI : MonoBehaviour
     {
         [SerializeField] TextMeshProUGUI tipText;
-        [SerializeField] MissionData missionData;
+
+        private GameTipsData gameTipsData => GameTipsData.Instance;
 
         private void OnEnable()
         {
@@ -23,8 +27,8 @@ namespace TurnBasedStrategy
             if (ControlModeManager.Instance.gameControlType == GameControlType.Outside)
             {
                 int level = LevelManager.Instance.level;
-                int randomIndex = Random.Range(0, missionData.missionTips.Count);
-                tipText.text = "<b>Tip:</b> " + missionData.missionTips[randomIndex];
+                int randomIndex = Random.Range(0, gameTipsData.MissionTips.Count);
+                tipText.text = "<b>Tip:</b> " + gameTipsData.MissionTips[randomIndex];
             }
         }
     }

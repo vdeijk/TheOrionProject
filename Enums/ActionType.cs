@@ -1,1 +1,0 @@
-public enum ActionType { Move, ShootPrimary, ShootSecondary, Pass }

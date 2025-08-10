@@ -1,9 +1,11 @@
 using System;
 using TMPro;
 using UnityEngine;
+using TurnBasedStrategy.Game;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class GameSpeedUI : MonoBehaviour
     {
         [SerializeField] TextMeshProUGUI gameSpeedText;

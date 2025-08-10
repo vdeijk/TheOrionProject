@@ -1,24 +1,28 @@
+using System.Collections.Generic;
 using UnityEngine;
+using TurnBasedStrategy.Controllers;
+using TurnBasedStrategy.Domain;
+using TurnBasedStrategy.Infra;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
-    public class UnitSwitchUI : UnitSwitching
+    [DefaultExecutionOrder(300)]
+    public class UnitSwitchUI : UnitSwitchController
     {
-        bool isPlaying => CameraChangeService.Instance.curCamera == CameraType.Overhead;
+        bool isPlaying => CameraChangeMonobService.Instance.curCamera == Data.CameraType.Overhead;
 
         private void Awake()
         {
-            duration = gameDurations.materialFadeDuration;
+            duration = durationData.MaterialFadeDuration;
         }
 
         public void SwitchUnitsUp()
         {
             if (canSwitch && isPlaying)
             {
-                SwitchUp(UnitCategoryService.Instance.all);
-                Vector3 targetPos = UnitSelectService.Instance.selectedUnit.unitBodyTransform.position;
-                CameraSmoothingService.Instance.StartCentering(targetPos);
-                GridSquareInfoController.Instance.SelectGridSquare(targetPos);
+                SwitchUp(UnitCategoryService.Instance.Data.All);
+                Vector3 targetPos = UnitSelectService.Instance.Data.SelectedUnit.Data.UnitBodyTransform.position;
+                CameraSmoothingMonobService.Instance.StartCentering(targetPos);
             }
         }
 
@@ -26,15 +30,10 @@ namespace TurnBasedStrategy
         {
             if (canSwitch && isPlaying)
             {
-                SwitchDown(UnitCategoryService.Instance.all);
-                Vector3 targetPos = UnitSelectService.Instance.selectedUnit.unitBodyTransform.position;
-                CameraSmoothingService.Instance.StartCentering(targetPos);
-                GridSquareInfoController.Instance.SelectGridSquare(targetPos);
+                SwitchDown(UnitCategoryService.Instance.Data.All);
+                Vector3 targetPos = UnitSelectService.Instance.Data.SelectedUnit.Data.UnitBodyTransform.position;
+                CameraSmoothingMonobService.Instance.StartCentering(targetPos);
             }
         }
     }
 }
-
-/*
-                if (UnitActionSystem.Instance.selectedAction == null) return;
-                UnitActionSystem.Instance.UpdateGridPositions(UnitSelectService.Instance.selectedUnit);*/

@@ -2,28 +2,32 @@ using System.Collections.Generic;
 using System;
 using TMPro;
 using UnityEngine;
+using TurnBasedStrategy.Controllers;
+using TurnBasedStrategy.Data;
+using TurnBasedStrategy.Game;
+using TurnBasedStrategy.Domain;
+using TurnBasedStrategy.Infra;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class ObjectiveUI : MonoBehaviour
     {
         [SerializeField] TextMeshProUGUI APRemainingText;
         [SerializeField] TextMeshProUGUI levelAndTurnText;
-        [SerializeField] MissionData missionData;
 
         private void OnEnable()
         {
-            UnitActionSystem.Instance.OnActionCompleted += UnitActionSystem_OnActionCompleted;
+            ActionBaseService.OnActionCompleted += UnitActionSystem_OnActionCompleted;
             PhaseManager.OnPhaseChanged += PhaseManager_OnPhaseChanged;
-            MenuChangeService.OnMenuChanged += MenuChangeService_OnMenuChanged;
-
+            MenuChangeMonobService.OnMenuChanged += MenuChangeService_OnMenuChanged;
         }
 
         private void OnDisable()
         {
-            UnitActionSystem.Instance.OnActionCompleted -= UnitActionSystem_OnActionCompleted;
+            ActionBaseService.OnActionCompleted -= UnitActionSystem_OnActionCompleted;
             PhaseManager.OnPhaseChanged -= PhaseManager_OnPhaseChanged;
-            MenuChangeService.OnMenuChanged -= MenuChangeService_OnMenuChanged;
+            MenuChangeMonobService.OnMenuChanged -= MenuChangeService_OnMenuChanged;
         }
 
         private void Start()
@@ -67,10 +71,9 @@ namespace TurnBasedStrategy
         private int CalculateRemainingAP()
         {
             int i = 0;
-
-            foreach (Unit unit in UnitCategoryService.Instance.allies)
+            foreach (UnitSingleController unit in UnitCategoryService.Instance.Data.Allies)
             {
-                i += unit.unitMindTransform.GetComponent<ActionSystem>().actionPoints;
+                i += unit.Data.UnitMindTransform.GetComponent<UnitActionController>().actionPoints;
             }
 
             return i;
@@ -80,9 +83,9 @@ namespace TurnBasedStrategy
         {
             int i = 0;
 
-            foreach (Unit unit in UnitCategoryService.Instance.allies)
+            foreach (UnitSingleController unit in UnitCategoryService.Instance.Data.Allies)
             {
-                i += unit.unitMindTransform.GetComponent<ActionSystem>().MAX_ACTION_POINTS;
+                i += unit.Data.UnitMindTransform.GetComponent<UnitActionController>().MAX_ACTION_POINTS;
             }
 
             return i;

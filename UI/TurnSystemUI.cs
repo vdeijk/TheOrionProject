@@ -3,14 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using TurnBasedStrategy.Controllers;
+using TurnBasedStrategy.Data;
+using TurnBasedStrategy.Game;
+using TurnBasedStrategy.Domain;
+using TurnBasedStrategy.Infra;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class TurnSystemUI : MonoBehaviour
     {
         [SerializeField] TextMeshProUGUI turnPhaseText;
         [SerializeField] CanvasGroup[] canvasGroups;
-        [SerializeField] GameDurations gameDurations;
+
+        private DurationData durationData => DurationData.Instance;
 
         private void Awake()
         {
@@ -33,7 +40,7 @@ namespace TurnBasedStrategy
 
         private void ControlModeManager_OnPhaseChanged(object sender, EventArgs e)
         {
-            List<Unit> allies = UnitCategoryService.Instance.allies;
+            List<UnitSingleController> allies = (List<UnitSingleController>)UnitCategoryService.Instance.Data.Allies;
             if (allies.Count > 0)
             {
                 StopAllCoroutines();
@@ -47,17 +54,17 @@ namespace TurnBasedStrategy
         {
             foreach (CanvasGroup canvasGroup in canvasGroups)
             {
-                StartCoroutine(MenuFadeService.Instance.Fade(canvasGroup, 1));
+                StartCoroutine(MenuFadeMonobService.Instance.Fade(canvasGroup, 1));
             }
         }
 
         IEnumerator WaitToDisable()
         {
-            yield return new WaitForSeconds(gameDurations.turnUIVisibility);
+            yield return new WaitForSeconds(durationData.TurnUIVisibility);
 
             foreach (CanvasGroup canvasGroup in canvasGroups)
             {
-                StartCoroutine(MenuFadeService.Instance.Fade(canvasGroup, 0));
+                StartCoroutine(MenuFadeMonobService.Instance.Fade(canvasGroup, 0));
             }
         }
 

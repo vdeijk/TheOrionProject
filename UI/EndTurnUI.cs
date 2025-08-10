@@ -1,8 +1,14 @@
+using System;
 using TMPro;
 using UnityEngine;
+using TurnBasedStrategy.Data;
+using TurnBasedStrategy.Game;
+using TurnBasedStrategy.Domain;
+using TurnBasedStrategy.Infra;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class EndTurnUI : MonoBehaviour
     {
         [SerializeField] CanvasGroup canvasGroup;
@@ -13,13 +19,13 @@ namespace TurnBasedStrategy
         private void OnEnable()
         {
             UnitCategoryService.OnUnitRemoved += UnitCategoryService_OnUnitRemoved;
-            MenuChangeService.OnMenuChanged += MenuChangeService_OnMenuChanged;
+            MenuChangeMonobService.OnMenuChanged += MenuChangeService_OnMenuChanged;
         }
 
         private void OnDisable()
         {
             UnitCategoryService.OnUnitRemoved -= UnitCategoryService_OnUnitRemoved;
-            MenuChangeService.OnMenuChanged -= MenuChangeService_OnMenuChanged;
+            MenuChangeMonobService.OnMenuChanged -= MenuChangeService_OnMenuChanged;
         }
 
         private void Start()
@@ -29,9 +35,8 @@ namespace TurnBasedStrategy
 
         public void HandleClick()
         {
-            int allies = UnitCategoryService.Instance.allies.Count;
-            int enemies = UnitCategoryService.Instance.enemies.Count;
-            BaseAction baseAction = UnitActionSystem.Instance.selectedAction;
+            int allies = UnitCategoryService.Instance.Data.Allies.Count;
+            int enemies = UnitCategoryService.Instance.Data.Enemies.Count;
 
             if (allies <= 0)
             {
@@ -45,7 +50,7 @@ namespace TurnBasedStrategy
             {
                 StartCoroutine(ControlModeManager.Instance.EnterPrepMode(false));
             }
-            else if (baseAction == null || !baseAction.isActive)
+            else if (!ActionCoordinatorService.IsAnyActionActive())
             {
                 PhaseManager.Instance.SetNextPhase();
             }
@@ -63,8 +68,8 @@ namespace TurnBasedStrategy
 
         private void Check()
         {
-            int allies = UnitCategoryService.Instance.allies.Count;
-            int enemies = UnitCategoryService.Instance.enemies.Count;
+            int allies = UnitCategoryService.Instance.Data.Allies.Count;
+            int enemies = UnitCategoryService.Instance.Data.Enemies.Count;
 
             if (allies <= 0 || enemies <= 0)
             {

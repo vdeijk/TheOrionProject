@@ -1,12 +1,14 @@
-using TurnBasedStrategy;
 using UnityEngine;
+using TurnBasedStrategy.Game;
 
-public class VictoryClickHandlers : MonoBehaviour
+namespace TurnBasedStrategy.UI
 {
-    [SerializeField] MissionData missionData;
-
-    public void Continue()
+    [DefaultExecutionOrder(300)]
+    public class VictoryClickHandlers : MonoBehaviour
     {
-        ControlModeManager.Instance.EnterMenuMode();
+        public void Continue()
+        {
+            ControlModeManager.Instance.EnterMenuMode();
+        }
     }
 }

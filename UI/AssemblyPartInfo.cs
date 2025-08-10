@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using TurnBasedStrategy.Game;
+using TurnBasedStrategy.Domain;
+using TurnBasedStrategy.Infra;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
-    public class AssemblyPartInfo : MonoBehaviour
+    [DefaultExecutionOrder(300)]
+    public class AssemblyPartInfoUI : MonoBehaviour
     {
         [SerializeField] Transform uiAssemblyBase;
         [SerializeField] Transform uiAssemblyWeapon;
@@ -18,14 +22,14 @@ namespace TurnBasedStrategy
 
         private void OnEnable()
         {
-            UnitAssemblyService.OnPartSelected += UnitAssemblyService_OnPartSelected;
-            UnitAssemblyService.OnPartDeselected += UnitAssemblyService_OnPartDeselected;
+            AssemblyService.OnPartSelected += UnitAssemblyService_OnPartSelected;
+            AssemblyService.OnPartDeselected += UnitAssemblyService_OnPartDeselected;
         }
 
         private void OnDisable()
         {
-            UnitAssemblyService.OnPartSelected -= UnitAssemblyService_OnPartSelected;
-            UnitAssemblyService.OnPartDeselected -= UnitAssemblyService_OnPartDeselected;
+            AssemblyService.OnPartSelected -= UnitAssemblyService_OnPartSelected;
+            AssemblyService.OnPartDeselected -= UnitAssemblyService_OnPartDeselected;
         }
 
         // Updates card UI when a part is selected
@@ -43,11 +47,11 @@ namespace TurnBasedStrategy
         // Handles assembling the selected part onto the unit
         public void Assemble()
         {
-            var unit = UnitSelectService.Instance.selectedUnit;
+            var unit = UnitSelectService.Instance.Data.SelectedUnit;
             var isOnUnit = false;
-            var selectedPart = UnitAssemblyService.Instance.selectedPart;
+            var selectedPart = AssemblyService.Instance.Data.SelectedPart;
 
-            foreach (var kvp in unit.partsData)
+            foreach (var kvp in unit.Data.PartsData)
             {
                 if (kvp.Value == selectedPart)
                 {
@@ -57,15 +61,15 @@ namespace TurnBasedStrategy
 
             if (unit == null || selectedPart == null || isOnUnit)
             {
-                SFXController.Instance.PlaySFX(SFXType.Failure);
+                SFXMonobService.Instance.PlaySFX(SFXType.Failure);
 
                 return;
             }
 
-            ScrapManager.Instance.RemoveScrap(UnitAssemblyService.Instance.selectedPart.Cost);
-            PartPreviewService.Instance.RemovePreview();
-            HighlightService.Instance.RemoveHighlight();
-            UnitAssemblyService.Instance.Assemble();
+            ScrapManager.Instance.RemoveScrap(AssemblyService.Instance.Data.SelectedPart.Cost);
+            AssemblyService.Instance.DestroyPartPreview();
+            PartHighlightService.Instance.Destroy();
+            AssemblyService.Instance.Assemble();
 
             OnPartAssembled?.Invoke(this, EventArgs.Empty);
         }
@@ -73,13 +77,13 @@ namespace TurnBasedStrategy
         // Handles recycling the selected part
         public void Recycle()
         {
-            UnitAssemblyService.Instance.Recycle();
+            AssemblyService.Instance.Recycle();
         }
 
         // Updates the part info card UI based on current selection
         private void UpdateCard()
         {
-            if (UnitAssemblyService.Instance.selectedPart == null)
+            if (AssemblyService.Instance.Data.SelectedPart == null)
             {
                 cardParent.gameObject.SetActive(false);
                 return;
@@ -94,7 +98,7 @@ namespace TurnBasedStrategy
                 card.gameObject.SetActive(false);
             }
 
-            switch (UnitAssemblyService.Instance.curPartType)
+            switch (AssemblyService.Instance.Data.CurPartType)
             {
                 case PartType.Base:
                     uiAssemblyBase.gameObject.SetActive(true);
@@ -108,7 +112,7 @@ namespace TurnBasedStrategy
                     break;
             }
 
-            backgroundText.text = "<b>Background:</b> " + UnitAssemblyService.Instance.selectedPart.Description;
+            backgroundText.text = "<b>Background:</b> " + AssemblyService.Instance.Data.SelectedPart.Description;
         }
     }
 }

@@ -1,0 +1,1 @@
+public enum MovementType { Rotate, Move, Stop }

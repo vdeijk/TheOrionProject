@@ -1,21 +1,24 @@
 using TMPro;
 using UnityEngine;
+using TurnBasedStrategy.Data;
+using TurnBasedStrategy.Domain;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class AssemblyPartButtonUI : BaseButtonUI
     {
-        private PartData partData;
+        private PartSO partData;
 
         [field: SerializeField] public TextMeshProUGUI partNameText { get; private set; }
         [field: SerializeField] public TextMeshProUGUI partCostText { get; private set; }
         [field: SerializeField] public TextMeshProUGUI partNumberText { get; private set; }
 
         // Returns the part data associated with this button
-        public PartData GetPartData() => partData;
+        public PartSO GetPartData() => partData;
 
         // Initializes the button with part data
-        public void Initialize(PartData partData)
+        public void Initialize(PartSO partData)
         {
             this.partData = partData;
         }
@@ -23,7 +26,7 @@ namespace TurnBasedStrategy
         // Updates button visuals based on current selection
         public void UpdateSelectedVisual()
         {
-            PartData currentSelectedPart = UnitAssemblyService.Instance.selectedPart;
+            PartSO currentSelectedPart = AssemblyService.Instance.Data.SelectedPart;
             isSelected = currentSelectedPart != null && currentSelectedPart == partData;
             button.interactable = true;
             SetButtonState(GetButtonState(), true);
@@ -34,7 +37,7 @@ namespace TurnBasedStrategy
         {
             if (partData != null)
             {
-                UnitAssemblyService.Instance.SelectPart(partData);
+                AssemblyService.Instance.SelectPart(partData);
             }
         }
     }

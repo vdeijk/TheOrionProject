@@ -1,22 +1,24 @@
+using System;
 using TMPro;
 using UnityEngine;
+using TurnBasedStrategy.Infra;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class OverlayClickHandlers : MonoBehaviour
     {
-        [SerializeField] MissionData missionData;
         [SerializeField] Transform continueButtonTransform;
         [SerializeField] TextMeshProUGUI dateAndLevelText;
 
         private void OnEnable()
         {
-            MenuChangeService.OnMenuChanged += MenuChangeService_OnMenuChanged;
+            MenuChangeMonobService.OnMenuChanged += MenuChangeService_OnMenuChanged;
         }
 
         private void OnDisable()
         {
-            MenuChangeService.OnMenuChanged -= MenuChangeService_OnMenuChanged;
+            MenuChangeMonobService.OnMenuChanged -= MenuChangeService_OnMenuChanged;
         }
 
         private void Start()
@@ -26,12 +28,12 @@ namespace TurnBasedStrategy
 
         public void Continue()
         {
-            ControlModeManager.Instance.EnterBriefingMode(false);
+            TurnBasedStrategy.Game.ControlModeManager.Instance.EnterBriefingMode(false);
         }
 
         public void NewRun()
         {
-            ControlModeManager.Instance.EnterBriefingMode(true);
+            TurnBasedStrategy.Game.ControlModeManager.Instance.EnterBriefingMode(true);
         }
 
         public void EnterOptions()
@@ -40,7 +42,7 @@ namespace TurnBasedStrategy
 
         public void EnterCredits()
         {
-            MenuChangeService.Instance.ToCreditsMenu();
+            MenuChangeMonobService.Instance.ToCreditsMenu();
         }
 
         public void Quit()
@@ -56,16 +58,16 @@ namespace TurnBasedStrategy
 
         private void SetDateAndLevel()
         {
-            int level = LevelManager.Instance.level;
+            int level = TurnBasedStrategy.Game.LevelManager.Instance.level;
             int date = 4732 + level * 3;
             dateAndLevelText.text = "Starcycle " + date + ", " + "Battle " + level;
         }
 
         private void SetContinueButton()
         {
-            if (MenuChangeService.Instance.curMenu != MenuType.Main) return;
+            if (MenuChangeMonobService.Instance.curMenu != MenuType.Main) return;
 
-            if (LevelManager.Instance.level == 1)
+            if (TurnBasedStrategy.Game.LevelManager.Instance.level == 1)
             {
                 continueButtonTransform.gameObject.SetActive(false);
             }

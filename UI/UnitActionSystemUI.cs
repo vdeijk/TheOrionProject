@@ -2,35 +2,41 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using TurnBasedStrategy.Controllers;
+using TurnBasedStrategy.Data;
+using TurnBasedStrategy.Game;
+using TurnBasedStrategy.Domain;
+using TurnBasedStrategy.Infra;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class UnitActionSystemUI : MonoBehaviour
     {
         [SerializeField] Transform actionButtonContainerTransform;
-        [SerializeField] ActionButtonUI[] actionButtonUIList;
+        [SerializeField] BaseButtonUI[] actionButtonUIList;
 
         private Dictionary<ActionType, ActionButtonUI> actionButtonDict = new Dictionary<ActionType, ActionButtonUI>();
 
         private void OnEnable()
         {
-            BaseAction.OnActionStarted += BaseAction_OnActionStarted;
-            BaseAction.OnActionCompleted += BaseAction_OnActionCompleted;
+            ActionBaseService.OnActionStarted += BaseAction_OnActionStarted;
+            ActionBaseService.OnActionCompleted += BaseAction_OnActionCompleted;
+            ActionBaseService.OnActionSelected += UnitActionSystem_OnSelectedActionChanged;
             UnitSelectService.OnUnitDeselected += UnitSelectionSystem_OnUnitDeselected;
             UnitSelectService.OnUnitSelected += UnitSelectionSystem_OnUnitSelected;
-            UnitActionSystem.Instance.OnSelectedActionChanged += UnitActionSystem_OnSelectedActionChanged;
-            CameraChangeService.OnCameraChanged += CameraChangeService_OnCameraChanged;
+            CameraChangeMonobService.OnCameraChanged += CameraChangeService_OnCameraChanged;
             ControlModeManager.OnGameModeChanged += ControlModeManager_OnControlModeChanged;
         }
 
         private void OnDestroy()
         {
-            BaseAction.OnActionStarted -= BaseAction_OnActionStarted;
-            BaseAction.OnActionCompleted -= BaseAction_OnActionCompleted;
+            ActionBaseService.OnActionStarted -= BaseAction_OnActionStarted;
+            ActionBaseService.OnActionCompleted -= BaseAction_OnActionCompleted;
+            ActionBaseService.OnActionSelected -= UnitActionSystem_OnSelectedActionChanged;
             UnitSelectService.OnUnitDeselected -= UnitSelectionSystem_OnUnitDeselected;
             UnitSelectService.OnUnitSelected -= UnitSelectionSystem_OnUnitSelected;
-            UnitActionSystem.Instance.OnSelectedActionChanged -= UnitActionSystem_OnSelectedActionChanged;
-            CameraChangeService.OnCameraChanged -= CameraChangeService_OnCameraChanged;
+            CameraChangeMonobService.OnCameraChanged -= CameraChangeService_OnCameraChanged;
             ControlModeManager.OnGameModeChanged -= ControlModeManager_OnControlModeChanged;
         }
 
@@ -81,31 +87,29 @@ namespace TurnBasedStrategy
 
         private void UpdateButtons()
         {
-            Unit selectedUnit = UnitSelectService.Instance.selectedUnit;
-            bool isOverhead = CameraChangeService.Instance.curCamera == CameraType.Overhead;
+            UnitSingleController selectedUnit = UnitSelectService.Instance.Data.SelectedUnit;
+            bool isOverhead = CameraChangeMonobService.Instance.curCamera == Data.CameraType.Overhead;
 
             if (selectedUnit == null || !isOverhead) return;
 
-            ActionSystem actionSystem = selectedUnit.unitMindTransform.GetComponent<ActionSystem>();
+            UnitActionController actionSystem = selectedUnit.Data.UnitMindTransform.GetComponent<UnitActionController>();
 
             HashSet<ActionType> availableActionTypes = new HashSet<ActionType>();
 
-            foreach (BaseAction baseAction in actionSystem.baseActions)
+            foreach (ActionBaseController baseAction in actionSystem.baseActions)
             {
-                ActionType actionType = baseAction.actionType;
-                availableActionTypes.Add(actionType);
+                availableActionTypes.Add(baseAction.Data.ActionType);
 
-                if (actionButtonDict.TryGetValue(actionType, out ActionButtonUI actionButtonUI))
+                if (actionButtonDict.TryGetValue(baseAction.Data.ActionType, out ActionButtonUI actionButtonUI))
                 {
-                    actionButtonUI.SetBaseAction(baseAction);
-                    actionButtonUI.UpdateSelectedVisual();
+                    actionButtonUI.UpdateButton();
                 }
             }
 
             foreach (var kvp in actionButtonDict)
             {
                 ActionType actionType = kvp.Key;
-                ActionButtonUI actionButtonUI = kvp.Value;
+                BaseButtonUI actionButtonUI = kvp.Value;
 
                 actionButtonUI.gameObject.SetActive(availableActionTypes.Contains(actionType));
             }

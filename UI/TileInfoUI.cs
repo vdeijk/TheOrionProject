@@ -1,27 +1,32 @@
 using System;
 using TMPro;
 using UnityEngine;
+using TurnBasedStrategy.Data;
+using TurnBasedStrategy.Domain;
+using TurnBasedStrategy.Infra;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class TileInfoUI : MonoBehaviour
     {
         [SerializeField] TextMeshProUGUI tileTypeField;
         [SerializeField] TextMeshProUGUI tileEffectField;
-        [SerializeField] GridData gridData;
+
+        private GridData gridData => GridCoordinatorService.Instance.Data;
 
         private void OnDisable()
         {
             UnitSelectService.OnUnitSelected -= UnitActionSystem_OnUnitSelected;
-            UnitActionSystem.Instance.OnActionCompleted -= TurnSystem_OnActionCompleted;
-            GridSquareInfoController.OnGridSquareClicked -= GridSquareInfoController_OnGridSquareClicked;
+            ActionBaseService.OnActionCompleted -= TurnSystem_OnActionCompleted;
+            UnitSelectService.OnGridSquareSelected -= GridSquareInfoController_OnGridSquareClicked;
         }
 
         private void Start()
         {
             UnitSelectService.OnUnitSelected += UnitActionSystem_OnUnitSelected;
-            UnitActionSystem.Instance.OnActionCompleted += TurnSystem_OnActionCompleted;
-            GridSquareInfoController.OnGridSquareClicked += GridSquareInfoController_OnGridSquareClicked;
+            ActionBaseService.OnActionCompleted += TurnSystem_OnActionCompleted;
+            UnitSelectService.OnGridSquareSelected += GridSquareInfoController_OnGridSquareClicked;
         }
 
         private void UnitActionSystem_OnUnitSelected(object sender, EventArgs e)
@@ -41,13 +46,14 @@ namespace TurnBasedStrategy
 
         private void UpdateTileInfo()
         {
-            if (CameraChangeService.Instance.curCamera != CameraType.Overhead) return;
-            if (GridSquareInfoController.Instance.selectedGridPosition == null) return;
-            GridPosition gridPosition = (GridPosition)GridSquareInfoController.Instance.selectedGridPosition;
+            if (CameraChangeMonobService.Instance.curCamera != Data.CameraType.Overhead) return;
+            if (UnitSelectService.Instance.Data.SelectedGridPosition == null) return;
 
-            GridObject gridObject = gridData.gridObjectArray[gridPosition.x, gridPosition.z];
+            Vector2Int gridPosition = (Vector2Int)UnitSelectService.Instance.Data.SelectedGridPosition;
+
+            GridObject gridObject = gridData.Objects[gridPosition.x, gridPosition.y];
             tileTypeField.text = gridObject.gridSquareType.ToString().ToUpper();
-            tileEffectField.text = gridData.squareTypes[gridObject.gridSquareType].description;
+            tileEffectField.text = gridData.GetSquareType(gridObject.gridSquareType).description;
         }
     }
 }

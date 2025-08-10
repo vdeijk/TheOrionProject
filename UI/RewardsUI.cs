@@ -1,8 +1,9 @@
 using System;
 using UnityEngine;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class RewardsUI : MonoBehaviour
     {
         [SerializeField] Transform rewardWindow;

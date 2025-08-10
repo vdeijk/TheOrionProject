@@ -1,8 +1,10 @@
 using System;
+using TurnBasedStrategy.Game;
 using UnityEngine;
 
-namespace TurnBasedStrategy
+namespace TurnBasedStrategy.UI
 {
+    [DefaultExecutionOrder(300)]
     public class PreparationClickHandlers : MonoBehaviour
     {
         public event Action OnToggleOptionsTriggered;
